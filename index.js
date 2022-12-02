@@ -1,9 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const port = process.env.PORT || 5000
-
 const app = express()
 // middleware
 app.use (cors())
@@ -18,9 +17,18 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run(){
         try{
             const watchListCollection =client.db('lastWatch').collection('watchList')
+          
             app.get('/watchComName', async(req,res)=>{
                 const query ={}
                 const options = await watchListCollection.find(query).toArray()
+                res.send(options)
+            })
+
+
+            app.get('/watchComName/:id', async (req, res) => {
+                const id = req.params.id
+                const query = { _id: ObjectId(id) }
+                const options = await watchListCollection.findOne(query)
                 res.send(options)
             })
         }
